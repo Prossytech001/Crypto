@@ -115,6 +115,7 @@ import toast from 'react-hot-toast'
 import SocialSignIn from '../SocialSignIn'
 import Logo from '@/components/Layout/Header/Logo'
 import Loader from '@/components/Common/Loader'
+import axios from 'axios'
 
 const Signin = () => {
   const router = useRouter()
@@ -143,12 +144,20 @@ const Signin = () => {
         toast.success('Login successful')
         router.push('/')
       }
-    } catch (err: any) {
-      toast.error(err.message || 'An error occurred')
-      console.log(err.message)
-    } finally {
-      setLoading(false)
-    }
+    } catch (err: unknown) {
+  let message = 'An error occurred'
+
+  if (axios.isAxiosError(err)) {
+    message = err.response?.data?.message || err.message
+  } else if (err instanceof Error) {
+    message = err.message
+  }
+
+  toast.error(message)
+  console.log(message) // Optional for debugging
+} finally {
+  setLoading(false)
+}
   }
 
   return (

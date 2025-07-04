@@ -390,10 +390,14 @@ const ResetPassword = ({ token }: { token: string }) => {
         if (res.status === 200) {
           setUser({ email: res.data.email });
         }
-      } catch (error: any) {
-        toast.error(error?.response?.data || 'Token verification failed.');
-        router.push('/forgot-password');
-      }
+      } catch (error: unknown) {
+  if (axios.isAxiosError(error)) {
+    toast.error(error.response?.data || 'Token verification failed.')
+  } else {
+    toast.error('Token verification failed.')
+  }
+  router.push('/forgot-password')
+}
     };
 
     verifyToken();
@@ -431,16 +435,23 @@ const ResetPassword = ({ token }: { token: string }) => {
         setData({ newPassword: '', ReNewPassword: '' });
         router.push('/signin');
       }
-    } catch (error: any) {
-      const message =
-        error?.response?.data?.message ||
-        error?.response?.data ||
-        error?.message ||
-        'An error occurred. Please try again.';
-      toast.error(message);
-    } finally {
-      setLoader(false);
-    }
+    } catch (error: unknown) {
+  let message = 'An error occurred. Please try again.'
+
+  if (axios.isAxiosError(error)) {
+    message =
+      error.response?.data?.message ||
+      error.response?.data ||
+      error.message ||
+      message
+  } else if (error instanceof Error) {
+    message = error.message
+  }
+
+  toast.error(message)
+} finally {
+  setLoader(false)
+}
   };
 
   return (

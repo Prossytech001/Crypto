@@ -356,11 +356,13 @@ const ForgotPassword = () => {
         toast.success(res.data)
         setEmail('')
       }
-    } catch (error: any) {
-      toast.error(error?.response?.data || 'Something went wrong')
-    } finally {
-      setLoader(false)
-    }
+    } catch (error: unknown) {
+  if (axios.isAxiosError(error)) {
+    toast.error(error.response?.data || 'Something went wrong')
+  } else {
+    toast.error('Something went wrong')
+  }
+}
   }
 
   return (

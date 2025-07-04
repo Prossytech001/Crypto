@@ -119,6 +119,7 @@ import Link from 'next/link';
 import Logo from '@/components/Layout/Header/Logo';
 import SocialSignUp from '../SocialSignUp';
 import Loader from '@/components/Common/Loader';
+import axios from 'axios';
 
 const SignUp = () => {
   const router = useRouter();
@@ -146,11 +147,18 @@ const SignUp = () => {
 
       toast.success('Successfully registered');
       router.push('/signin');
-    } catch (err: any) {
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
-    }
+    } catch (err: unknown) {
+  let message = 'An error occurred';
+
+  if (axios.isAxiosError(err)) {
+    message = err.response?.data?.message || err.message;
+  } else if (err instanceof Error) {
+    message = err.message;
+  }
+
+  toast.error(message);
+}
+
   };
 
   return (
@@ -206,13 +214,17 @@ const SignUp = () => {
 
       <p className='text-body-secondary mb-4 text-white text-base'>
         By creating an account you agree to our{' '}
-        <a href='/#' className='text-primary hover:underline'>
+        {/* <a href='/#' className='text-primary hover:underline'>
           Privacy
         </a>{' '}
         and{' '}
         <a href='/#' className='text-primary hover:underline'>
           Policy
-        </a>
+        </a> */}
+        <Link href='/#' className='text-primary hover:underline'>Privacy</Link>
+        and{' '}
+<Link href='/#' className='text-primary hover:underline'>Policy</Link>
+
         .
       </p>
 
